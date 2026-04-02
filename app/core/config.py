@@ -7,14 +7,14 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES:int = 5
 
     #Database
-    DATABASE_URL: str = ''
+    DATABASE_URL: str = 'postgresql+asyncpg://postgres:1009@localhost/task_db'
 
     #Email(Mock for now)
     SMTP_HOST: str= "smtp.example.com"
     SMTP_USER: str = ""
     SMTP_PASSWORD:str = ""
 
-    class config:
+    class Config:
         env_file = '.env'
 
 settings = Settings()
