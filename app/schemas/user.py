@@ -1,11 +1,11 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 import uuid
 
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=6)
 
 
 class UserRead(BaseModel):
