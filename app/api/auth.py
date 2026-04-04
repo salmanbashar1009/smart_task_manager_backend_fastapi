@@ -8,7 +8,7 @@ from ..services import auth_service
 router = APIRouter()
 
 @router.post("/register", response_model= user.UserRead)
-async def register(data:user.UserCreate, session = AsyncSession = Depends(get_session)):
+async def register(data:user.UserCreate, session: AsyncSession = Depends(get_session)):
     repo  = user_repo.UserRepository(session)
     service = auth_service.AuthService(repo)
     try:

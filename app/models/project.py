@@ -1,15 +1,16 @@
+from sqlalchemy.orm import Mapped
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, Any, List
-from datetime import datetime
+from typing import List, Optional
 import uuid
-from __future__ import annotations
-from .task import Task
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .task import Task
 
-class Project(SQLModel,table=True):
+class Project(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str
     description: Optional[str] = None
+    # Add any other fields you have...
 
-    # Relationship
-    tasks: List[Task] = Relationship(back_populates='project')
+    tasks: Mapped[List["Task"]] = Relationship(back_populates="project")

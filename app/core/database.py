@@ -4,6 +4,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from .config import settings
 
+from app.models.user import User
+from app.models.task import Task
+from app.models.project import Project
+from app.models.comment import Comment
+
 engine = create_async_engine(settings.DATABASE_URL, echo = True)
 
 # create sessionmaker once
