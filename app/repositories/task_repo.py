@@ -2,6 +2,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from app.models.task import Task
 import uuid
+from typing import Optional
+
 
 class TaskRepository:
     def __init__(self, session:AsyncSession):
@@ -13,11 +15,15 @@ class TaskRepository:
         await self.session.refresh(task)
         return task
     
-    async def get_tasks(self,skip:int, limit:int,status: str | None):
+    async def get_task_by_id(self,task_id:uuid.UUID)->Task:
+        statement = select(Task).where(Task.id == task_id)
+        result = await self.session.exec(statement)
+        return result.first()
+    
+    async def get_all(self, skip:int, limit:int, status: Optional[str] = None):
         statement = select(Task)
         if status:
             statement = statement.where(Task.status == status)
-        # Filtering logic here...
         statement = statement.offset(skip).limit(limit)
         result = await self.session.exec(statement)
-        return result.all()
+        return result.all
