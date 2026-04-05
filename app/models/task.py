@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship 
 from typing import Optional, List
 import uuid
 from datetime import datetime
@@ -15,7 +15,7 @@ class Task(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str
     description: Optional[str] = None
-    status: str = Field(default="todo")
+    status: str = Field(default="todo") # todo, in-progress, done
     created_at: datetime = Field(default_factory=datetime.now)
 
     project_id: Optional[uuid.UUID] = Field(default=None, foreign_key="project.id")
