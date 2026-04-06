@@ -1,67 +1,177 @@
-# Smart Task Manager Backend API Documentation
+Here’s a cleaner, more structured, and professional rewrite of your API documentation:
 
-## Base URL
+---
+
+# 📌 Smart Task Manager – Backend API Documentation
+
+## 🔗 Base URL
+
 ```
 http://127.0.0.1:8000
 ```
 
-## Interactive Docs
-- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+## 📖 Interactive API Docs
 
-## Authentication
-- All endpoints require JWT Bearer token (obtained via login).
-- Header: `Authorization: Bearer <token>`
-- Uses `Depends(get_current_user)` for `current_user: User`.
+* **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+* **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
-## API Endpoints
+---
 
-### Auth (assumed /api/auth/)
+## 🔐 Authentication
+
+All endpoints require **JWT Bearer Token authentication**.
+
+* Include the token in headers:
+
 ```
-POST /api/auth/register - Create user
-POST /api/auth/login - Get JWT token
+Authorization: Bearer <your_token>
 ```
 
-### Projects (/api/projects/)
-| Method | Endpoint | Description | Permissions | Request | Response |
-|--------|----------|-------------|-------------|---------|----------|
-| POST | `/` | Create project | Auth | `ProjectCreate` (name: str, description?: str) | `ProjectRead` |
-| GET | `/` | List projects (paginated) | Auth | Query: skip, limit | `List[ProjectRead]` |
-| GET | `/{project_id}` | Get project | Auth | - | `ProjectRead` |
-| PATCH | `/{project_id}` | Update project | Auth | `ProjectUpdate` | `ProjectRead` |
-| **DELETE** | `/{project_id}` | Delete project **(only creator)** | Creator only | - | `{"message": "Project deleted successfully"}` |
+* Authentication is handled using:
 
-### Tasks (/api/tasks/)
-| Method | Endpoint | Description | Permissions | Request | Response |
-|--------|----------|-------------|-------------|---------|----------|
-| POST | `/` | Create task (emails assignee) | Auth | `TaskCreate` (title, description?, status?, project_id?, assignee_id?) | `TaskRead` |
-| GET | `/` | List tasks (filter status) | Auth | Query: skip, limit, status | `List[TaskRead]` |
-| PATCH | `/{task_id}` | Update task (status etc.) | Auth | `TaskUpdate` | `TaskRead` |
-| DELETE | `/{task_id}` | Delete task | Auth | - | `{"message": "..."}` |
+```
+Depends(get_current_user)
+```
 
-### Comments (/api/tasks/{task_id}/comments/)
-| Method | Endpoint | Description | Permissions | Request | Response |
-|--------|----------|-------------|-------------|---------|----------|
-| **POST** | `/{task_id}/comments` | Add comment | Auth | `CommentCreate` (content: str) | `CommentRead` |
-| **PATCH** | `/{task_id}/comments/{comment_id}` | Update comment **(only author)** | Author only | `CommentUpdate` (content: str) | `CommentRead` |
-| **DELETE** | `/{task_id}/comments/{comment_id}` | Delete comment **(only author)** | Author only | - | `{"message": "Comment deleted successfully"}` |
+---
 
-## Schemas (Pydantic Models)
-- **User**: id (UUID), email
-- **Project**: id, name, description, creator_id
-- **Task**: id, title, description, status, project_id, assignee_id
-- **Comment**: id, content, task_id, user_id, created_at
+## 🚀 API Overview
 
-## Error Responses
-- 401: Unauthorized
-- 403: Forbidden (permissions)
-- 404: Not found
+### 🔑 Auth Endpoints (`/api/auth/`)
 
-## Features
-- **Permissions**: Project delete (creator), Comment CRUD (author).
-- **Emails**: Mock notification to assignee on task create.
-- **Database**: SQLModel + AsyncPG (Postgres).
-- **Background Tasks**: Email sending.
+| Method | Endpoint    | Description                            |
+| ------ | ----------- | -------------------------------------- |
+| POST   | `/register` | Register a new user                    |
+| POST   | `/login`    | Authenticate user and return JWT token |
 
-Dev server auto-reloads on file changes. See /docs for request/response examples.
+---
 
+### 📁 Project Endpoints (`/api/projects/`)
+
+| Method | Endpoint        | Description                       | Permissions      |
+| ------ | --------------- | --------------------------------- | ---------------- |
+| POST   | `/`             | Create a new project              | Authenticated    |
+| GET    | `/`             | Retrieve all projects (paginated) | Authenticated    |
+| GET    | `/{project_id}` | Get project by ID                 | Authenticated    |
+| PATCH  | `/{project_id}` | Update project                    | Authenticated    |
+| DELETE | `/{project_id}` | Delete project                    | **Creator only** |
+
+**Request Models:**
+
+* `ProjectCreate`: `name (str)`, `description (optional)`
+* `ProjectUpdate`
+
+**Response Model:**
+
+* `ProjectRead`
+
+---
+
+### ✅ Task Endpoints (`/api/tasks/`)
+
+| Method | Endpoint     | Description                                | Permissions   |
+| ------ | ------------ | ------------------------------------------ | ------------- |
+| POST   | `/`          | Create a task (triggers email to assignee) | Authenticated |
+| GET    | `/`          | List tasks (supports status filter)        | Authenticated |
+| PATCH  | `/{task_id}` | Update task (e.g., status)                 | Authenticated |
+| DELETE | `/{task_id}` | Delete a task                              | Authenticated |
+
+**Request Models:**
+
+* `TaskCreate`: `title`, `description?`, `status?`, `project_id?`, `assignee_id?`
+* `TaskUpdate`
+
+**Response Model:**
+
+* `TaskRead`
+
+---
+
+### 💬 Comment Endpoints (`/api/tasks/{task_id}/comments/`)
+
+| Method | Endpoint        | Description             | Permissions     |
+| ------ | --------------- | ----------------------- | --------------- |
+| POST   | `/`             | Add a comment to a task | Authenticated   |
+| PATCH  | `/{comment_id}` | Update comment          | **Author only** |
+| DELETE | `/{comment_id}` | Delete comment          | **Author only** |
+
+**Request Models:**
+
+* `CommentCreate`: `content (str)`
+* `CommentUpdate`
+
+**Response Model:**
+
+* `CommentRead`
+
+---
+
+## 🧩 Data Models (Schemas)
+
+* **User**
+
+  * `id (UUID)`
+  * `email`
+
+* **Project**
+
+  * `id`
+  * `name`
+  * `description`
+  * `creator_id`
+
+* **Task**
+
+  * `id`
+  * `title`
+  * `description`
+  * `status`
+  * `project_id`
+  * `assignee_id`
+
+* **Comment**
+
+  * `id`
+  * `content`
+  * `task_id`
+  * `user_id`
+  * `created_at`
+
+---
+
+## ⚠️ Error Handling
+
+| Status Code | Description                             |
+| ----------- | --------------------------------------- |
+| 401         | Unauthorized (invalid or missing token) |
+| 403         | Forbidden (insufficient permissions)    |
+| 404         | Resource not found                      |
+
+---
+
+## ✨ Key Features
+
+* 🔒 **Role-based Permissions**
+
+  * Only project creators can delete projects
+  * Only comment authors can edit/delete comments
+
+* 📧 **Email Notifications**
+
+  * Mock email sent to assignee upon task creation
+
+* 🗄️ **Database**
+
+  * Built with **SQLModel** and **AsyncPG (PostgreSQL)**
+
+* ⚙️ **Background Tasks**
+
+  * Handles email sending asynchronously
+
+* 🔄 **Auto Reload**
+
+  * Development server reloads automatically on file changes
+
+---
+
+For detailed request/response examples, visit the interactive documentation at `/docs`.
