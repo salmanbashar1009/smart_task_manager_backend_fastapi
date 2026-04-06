@@ -1,4 +1,4 @@
-import jwt
+from jose import jwt
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta
 from .config import settings

@@ -51,10 +51,12 @@ class TaskService:
     
     async def add_comment(self, task_id: uuid.UUID, user_id: uuid.UUID, content: str):
         # Verify task exists
-        task = await self.repo.get_by_id(task_id)
+        task = await self.repo.get_task_by_id(task_id)
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
             
+        from app.repositories.comment_repo import CommentRepository
+        comment_repo = CommentRepository(self.repo.session)
         comment = Comment(content=content, task_id=task_id, user_id=user_id)
-        return await self.repo.add_comment(comment)
+        return await comment_repo.create(comment)
     

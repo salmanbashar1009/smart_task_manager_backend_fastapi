@@ -1,8 +1,17 @@
-# Fix Auth Register 500 Error
+# TODO: Steps to run the project (approved plan)
 
-## Steps:
-- [x] Edit app/repositories/user_repo.py: Fix session.refresh() to pass 'user' instance.
-- [x] Test POST /auth/register via http://127.0.0.1:8000/docs (expect 200).
-- [x] Restart server: Ctrl+C then `fastapi dev app/main.py` if needed.
+# Additional fixes for auth errors
+- [x] Fix deps.py and security.py JWT/passlib imports and typos
+- [x] Rerun server
 
-Task complete. .gitignore added excluding venv/.
+
+
+- [x] 1. Fix import error in app/api/task.py
+
+- [x] 2. Activate venv: source venv/Scripts/activate
+
+- [x] 3. Install core dependencies: pip install fastapi uvicorn sqlmodel pydantic python-multipart python-jose[cryptography] passlib[bcrypt]
+- [x] 4. Run dev server: fastapi dev app/main.py
+
+- [x] 5. Verify server runs without errors
+

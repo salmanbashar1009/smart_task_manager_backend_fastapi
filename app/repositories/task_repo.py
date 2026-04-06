@@ -39,11 +39,3 @@ class TaskRepository:
     async def delete(self, task:Task):
         await self.session.delete(task)
         await self.session.commit()
-
-
-    # Comments
-    async def add_comment(self, comment: Comment) -> Comment:
-        self.session.add(comment)
-        await self.session.commit()
-        await self.session.refresh(comment)
-        return comment
