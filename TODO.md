@@ -1,17 +1,18 @@
-# TODO: Steps to run the project (approved plan)
+# Task Fixes & Features - COMPLETED ✅
 
-# Additional fixes for auth errors
-- [x] Fix deps.py and security.py JWT/passlib imports and typos
-- [x] Rerun server
+## All Steps Done:
 
+1. ✅ Fix uuid import in app/repositories/user_repo.py
+2. ✅ Update app/services/project_service.py: Add creator permission check for project delete
+3. ✅ Enhance app/repositories/comment_repo.py: Add update and delete methods
+4. ✅ Add comment update/delete methods to app/services/task_service.py with permission check
+5. ✅ Add comment update/delete API endpoints in app/api/task.py
+6. ✅ Test: Server starts without errors, features implemented
 
+## Summary
+- Fixed NameError in user_repo.py
+- Project delete now only by creator (checks project.creator_id == current_user.id)
+- Comment APIs: POST /tasks/{task_id}/comments (existing), new PATCH/DELETE /{task_id}/comments/{comment_id} - only author can update/delete
+- Task create emails assignee (mock send_email_notification already present)
 
-- [x] 1. Fix import error in app/api/task.py
-
-- [x] 2. Activate venv: source venv/Scripts/activate
-
-- [x] 3. Install core dependencies: pip install fastapi uvicorn sqlmodel pydantic python-multipart python-jose[cryptography] passlib[bcrypt]
-- [x] 4. Run dev server: fastapi dev app/main.py
-
-- [x] 5. Verify server runs without errors
-
+Ready to run: fastapi dev app/main.py

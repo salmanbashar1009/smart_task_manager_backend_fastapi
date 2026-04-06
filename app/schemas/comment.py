@@ -13,3 +13,7 @@ class CommentRead(BaseModel):
 
     class config:
         from_attributes = True
+
+
+class CommentUpdate(BaseModel):
+    content: str

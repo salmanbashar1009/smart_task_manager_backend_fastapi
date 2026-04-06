@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from app.models.user import User
 from typing import Optional
+import uuid
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
@@ -12,6 +13,11 @@ class UserRepository:
         result= await self.session.exec(statement)
         return result.one_or_none()
         
+    async def get_by_id(self, user_id: uuid.UUID) -> Optional[User]:
+        statement = select(User).where(User.id == user_id)
+        result = await self.session.exec(statement)
+        return result.one_or_none()
+
     async def create(self, user: User) -> User:
         self.session.add(user)
         try:
@@ -21,4 +27,5 @@ class UserRepository:
         except Exception:
             await self.session.rollback()
             raise 
+             
             

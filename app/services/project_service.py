@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from app.repositories.project_repo import ProjectRepository
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectRead
 from app.models.project import Project
+from app.models.user import User
+from fastapi import HTTPException
 
 class ProjectService:
     def __init__(self, repo: ProjectRepository):
@@ -29,9 +31,12 @@ class ProjectService:
         updated = await self.repo.update(project_id, obj_in)
         return ProjectRead.from_orm(updated)
 
-    async def delete_project(self, project_id: uuid.UUID) -> dict:
-        deleted = await self.repo.delete(project_id)
-        if not deleted:
+    async def delete_project(self, project_id: uuid.UUID, current_user: User) -> dict:
+        project = await self.repo.get_by_id(project_id)
+        if not project:
             raise HTTPException(status_code=404, detail="Project not found")
+        if project.creator_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Only project creator can delete")
+        deleted = await self.repo.delete(project_id)
         return {"message": "Project deleted successfully"}
 

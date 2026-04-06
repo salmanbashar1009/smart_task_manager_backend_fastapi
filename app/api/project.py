@@ -6,7 +6,7 @@ from app.core.database import get_session
 from app.repositories.project_repo import ProjectRepository
 from app.services.project_service import ProjectService
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectRead
-from app.api.deps import get_current_user, require_admin
+from app.api.deps import get_current_user
 from app.models.user import User
 
 router = APIRouter()
@@ -53,7 +53,7 @@ async def update_project(
 async def delete_project(
     project_id: str,
     service: ProjectService = Depends(get_project_service),
-    admin_user: User = Depends(require_admin)
+    current_user: User = Depends(get_current_user)
 ):
-    return await service.delete_project(uuid.UUID(project_id))
+    return await service.delete_project(uuid.UUID(project_id), current_user)
 

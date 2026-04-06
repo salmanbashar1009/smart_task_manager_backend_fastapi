@@ -12,7 +12,7 @@ async def register(data:user.UserCreate, session: AsyncSession = Depends(get_ses
     repo  = user_repo.UserRepository(session)
     service = auth_service.AuthService(repo)
     try:
-        user = await service.register_user(data.email, data.password, data.role)
+        user = await service.register_user(data.email, data.password)
         return user
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

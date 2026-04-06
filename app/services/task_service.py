@@ -1,9 +1,11 @@
 from app.repositories.task_repo import TaskRepository
 from app.models.task import Task
+from app.models.task import Task
 from app.models.user import User
 from app.models.comment import Comment
 from fastapi import BackgroundTasks, HTTPException, status
 import uuid
+from app.schemas.comment import CommentUpdate
 
 #mock email function
 def send_email_notification(email:str,task_title:str):
@@ -59,4 +61,25 @@ class TaskService:
         comment_repo = CommentRepository(self.repo.session)
         comment = Comment(content=content, task_id=task_id, user_id=user_id)
         return await comment_repo.create(comment)
+
+    async def update_comment(self, comment_id: uuid.UUID, content: str, current_user_id: uuid.UUID):
+        from app.repositories.comment_repo import CommentRepository
+        from app.schemas.comment import CommentUpdate
+        comment_repo = CommentRepository(self.repo.session)
+        comment = await comment_repo.get_by_id(comment_id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        if comment.user_id != current_user_id:
+            raise HTTPException(status_code=403, detail="Only comment author can update")
+        return await comment_repo.update(comment_id, CommentUpdate(content=content))
+
+    async def delete_comment(self, comment_id: uuid.UUID, current_user_id: uuid.UUID):
+        from app.repositories.comment_repo import CommentRepository
+        comment_repo = CommentRepository(self.repo.session)
+        comment = await comment_repo.get_by_id(comment_id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        if comment.user_id != current_user_id:
+            raise HTTPException(status_code=403, detail="Only comment author can delete")
+        return await comment_repo.delete(comment_id)
     

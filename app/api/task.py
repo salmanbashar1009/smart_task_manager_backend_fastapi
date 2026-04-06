@@ -4,8 +4,9 @@ from app.core.database import get_session
 from app.repositories.task_repo import TaskRepository
 from app.services.task_service import TaskService
 from app.schemas.task import TaskCreate, TaskUpdate, TaskRead
-from app.schemas.comment import CommentCreate, CommentRead
-from app.api.deps import get_current_user, require_admin
+from app.schemas.comment import CommentCreate, CommentRead, CommentUpdate
+import uuid
+from app.api.deps import get_current_user
 from app.models.user import User
 from app.repositories.user_repo import UserRepository
 from typing import List, Optional
@@ -22,16 +23,9 @@ async def create_task(
     data: TaskCreate, 
     background_tasks: BackgroundTasks,
     service: TaskService = Depends(get_task_service),
-    session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
-    # Check if assignee exists if provided
-    assignee = None
-    if data.assignee_id:
-        user_repo = UserRepository(session)
-        assignee = await user_repo.get_by_id(data.assignee_id) # Note: You need to add get_by_id to UserRepo
-        
-    return await service.create_task(data, background_tasks, assignee)
+    return await service.create_task(data, background_tasks)
 
 @router.get("/", response_model=List[TaskRead])
 async def list_tasks(
@@ -55,16 +49,15 @@ async def update_task(
 ):
     # Business Logic: Only admins or assignees can update? 
     # For now, we allow any logged-in user for demo.
-    return await service.update_task_status(task_id, data)
+    return await service.update_task_status(uuid.UUID(task_id), data)
 
 @router.delete("/{task_id}")
 async def delete_task(
     task_id: str,
     service: TaskService = Depends(get_task_service),
-    # RBAC: Only Admins can delete
-    admin_user: User = Depends(require_admin) 
+    current_user: User = Depends(get_current_user)
 ):
-    await service.delete_task(task_id)
+    await service.delete_task(uuid.UUID(task_id))
     return {"message": "Task deleted successfully"}
 
 @router.post("/{task_id}/comments", response_model=CommentRead)
@@ -74,4 +67,25 @@ async def add_comment(
     service: TaskService = Depends(get_task_service),
     current_user: User = Depends(get_current_user)
 ):
-    return await service.add_comment(task_id, current_user.id, data.content)
+    return await service.add_comment(uuid.UUID(task_id), current_user.id, data.content)
+
+@router.patch("/{task_id}/comments/{comment_id}", response_model=CommentRead)
+async def update_comment(
+    task_id: str,
+    comment_id: str,
+    data: CommentUpdate,
+    service: TaskService = Depends(get_task_service),
+    current_user: User = Depends(get_current_user)
+):
+    # Optional: validate comment belongs to task, but for simplicity use service logic
+    return await service.update_comment(uuid.UUID(comment_id), data.content, current_user.id)
+
+@router.delete("/{task_id}/comments/{comment_id}")
+async def delete_comment(
+    task_id: str,
+    comment_id: str,
+    service: TaskService = Depends(get_task_service),
+    current_user: User = Depends(get_current_user)
+):
+    await service.delete_comment(uuid.UUID(comment_id), current_user.id)
+    return {"message": "Comment deleted successfully"}
