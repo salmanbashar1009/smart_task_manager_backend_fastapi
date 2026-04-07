@@ -19,7 +19,7 @@ class ProjectRepository:
         result = await self.session.exec(statement)
         return result.one_or_none()
 
-    async def get_all(self,owner_id:uuid.UUID, skip: int = 0, limit: int = 10) -> List[Project]:
+    async def get_all(self,owner_id:uuid.UUID, skip: int = 0, limit: int = 50) -> List[Project]:
         """Get only projects belonging to the current user"""
         statement = select(Project).where(
             Project.owner_id == owner_id

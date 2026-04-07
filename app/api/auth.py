@@ -4,6 +4,7 @@ from ..schemas import user
 from app.core.database import get_session
 from ..repositories import user_repo
 from ..services import auth_service
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
 
@@ -19,11 +20,11 @@ async def register(data:user.UserCreate, session: AsyncSession = Depends(get_ses
     
 
 @router.post("/login", response_model=user.Token)
-async def login(data: user.UserCreate, session: AsyncSession=Depends(get_session)):
+async def login(data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession=Depends(get_session)):
     repo = user_repo.UserRepository(session)
     service = auth_service.AuthService(repo)
     try:
-        user = await service.login_user(data.email, data.password)
+        user = await service.login_user(data.username, data.password)
         return user
     except ValueError:
         raise HTTPException(status_code=401, detail='Invalid credentials')

@@ -30,7 +30,7 @@ async def list_projects(
     service: ProjectService = Depends(get_project_service),
     current_user: User = Depends(get_current_user)
 ):
-    return await service.get_projects(current_user,skip,limit)
+    return await service.get_projects(current_user,skip,limit, token)
 
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_project(

@@ -6,6 +6,7 @@ from .config import settings
 #initialize Argon2 password hasher
 password_hasher = PasswordHash.recommended()
 
+
 #verify hashed password
 def verify_password(plain_password: str, hashed_password:str):
     try:
