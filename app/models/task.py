@@ -17,9 +17,12 @@ class Task(SQLModel, table=True):
     description: Optional[str] = None
     status: str = Field(default="todo") # todo, in-progress, done
     created_at: datetime = Field(default_factory=datetime.now)
+    priority: str = Field(default="medium")
+    deadline: Optional[datetime] = None
 
     project_id: Optional[uuid.UUID] = Field(default=None, foreign_key="project.id")
     assignee_id: Optional[uuid.UUID] = Field(default=None, foreign_key="user.id")
+
 
     project: Mapped[Optional["Project"]] = Relationship(back_populates="tasks")
     assignee: Mapped[Optional["User"]] = Relationship(back_populates="tasks")

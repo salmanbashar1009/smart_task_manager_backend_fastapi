@@ -67,23 +67,41 @@ Depends(get_current_user)
 
 ---
 
-### ✅ Task Endpoints (`/api/tasks/`)
+### ✅ Task Endpoints (`/tasks/`)
 
-| Method | Endpoint     | Description                                | Permissions   |
-| ------ | ------------ | ------------------------------------------ | ------------- |
-| POST   | `/`          | Create a task (triggers email to assignee) | Authenticated |
-| GET    | `/`          | List tasks (supports status filter)        | Authenticated |
-| PATCH  | `/{task_id}` | Update task (e.g., status)                 | Authenticated |
-| DELETE | `/{task_id}` | Delete a task                              | Authenticated |
+**`POST /tasks/` - Create Task** 👈 **NEW: Fixed ResponseValidationError**
 
-**Request Models:**
+| Param             | Type              | Required | Description                  | Default     |
+|-------------------|-------------------|----------|------------------------------|-------------|
+| `title`           | string            | ✅ Yes   | Task title                   | -           |
+| `description`     | string (optional) | No       | Task description             | null        |
+| `project_id`      | UUID (optional)   | No       | Assign to project            | null        |
+| `assignee_email`  | email (optional)  | No       | Email of assignee            | null        |
+| `priority`        | string            | No       | low/medium/high              | "medium"    |
+| `deadline`        | datetime (optional)| No      | Due date                     | null        |
 
-* `TaskCreate`: `title`, `description?`, `status?`, `project_id?`, `assignee_id?`
-* `TaskUpdate`
+**Response:** `TaskRead`
+```json
+{
+  "id": "uuid",
+  "title": "complete login screen",
+  "status": "todo",
+  "priority": "medium",
+  "deadline": null,
+  ...
+}
+```
 
-**Response Model:**
+*Triggers background email to assignee*
 
-* `TaskRead`
+**Other Task Endpoints:**
+| Method | Endpoint     | Description                  |
+|--------|--------------|------------------------------|
+| GET    | `/`          | List tasks (?status=todo)    |
+| PATCH  | `/{task_id}` | Update task status/etc       |
+| DELETE | `/{task_id}` | Delete task                  |
+
+**Auth:** `Authorization: Bearer <token>` required for all.
 
 ---
 
@@ -174,4 +192,4 @@ Depends(get_current_user)
 
 ---
 
-For detailed request/response examples, visit the interactive documentation at `/docs`.
+For detailed request/response examples, visit the interactive documentation at `/docs`..

@@ -19,13 +19,12 @@ class TaskUpdate(BaseModel):
     assignee_email: Optional[EmailStr]=None
     deadline: Optional[datetime]=None  
 
-
 class TaskRead(BaseModel):
     id: uuid.UUID
     title: str
     status: str
-    priority: str
-    deadline:Optional[datetime]
+    priority: Optional[str] = "medium"
+    deadline: Optional[datetime] = None
 
     class config:
         from_attributes = True
