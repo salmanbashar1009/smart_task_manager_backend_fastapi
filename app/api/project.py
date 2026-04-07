@@ -21,7 +21,7 @@ async def create_project(
     service: ProjectService = Depends(get_project_service),
     current_user: User = Depends(get_current_user)
 ):
-    return await service.create_project(data)
+    return await service.create_project(data,current_user)
 
 @router.get("/", response_model=List[ProjectRead])
 async def list_projects(
@@ -30,7 +30,7 @@ async def list_projects(
     service: ProjectService = Depends(get_project_service),
     current_user: User = Depends(get_current_user)
 ):
-    return await service.get_projects(skip, limit)
+    return await service.get_projects(current_user,skip,limit)
 
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_project(
@@ -38,7 +38,7 @@ async def get_project(
     service: ProjectService = Depends(get_project_service),
     current_user: User = Depends(get_current_user)
 ):
-    return await service.get_project(uuid.UUID(project_id))
+    return await service.get_project(uuid.UUID(project_id),current_user)
 
 @router.patch("/{project_id}", response_model=ProjectRead)
 async def update_project(
