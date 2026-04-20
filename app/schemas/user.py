@@ -1,25 +1,24 @@
 from pydantic import BaseModel, EmailStr, Field
-from datetime import datetime
+from typing import Literal, Optional
 import uuid
-from typing import Optional
-
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6)
 
-
 class UserRead(BaseModel):
     id: uuid.UUID
     email: EmailStr
-
-    class config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
 class TokenData(BaseModel):
-    """Internal schema to hold decoded token data."""
-    sub: Optional[str] = None  # user id
+    sub: Optional[str] = None
+
+class UserRegistrationResponse(BaseModel):
+    success: bool = True
+    message: Literal["user created successfully"]
+    model_config = {"from_attributes": True}
